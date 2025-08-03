@@ -1,1 +1,174 @@
-<b>Loading ...</b>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Globe Projection</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      background: black;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #overlayText {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      color: white;
+      font-family: monospace;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    .blinking-cursor::after {
+      content: '|';
+      animation: blink 1s step-start infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div id="overlayText" class="blinking-cursor">Loading universe, please wait...</div>
+
+  <script>
+    // ==== Global Config Variables ====
+    const skyColor = 'black';
+    const lineColor = 'lime';
+    const globePosition = { x: 0, y: 0, z: 0 };
+    const cameraPosition = { x: 0, y: 0, z: 500 };
+    const numStars = 100;
+    const angleSpeed = 0.1;
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // === Projection Method ===
+    function project3DTo2D(point3D) {
+      const dx = point3D.x - cameraPosition.x;
+      const dy = point3D.y - cameraPosition.y;
+      const dz = point3D.z - cameraPosition.z;
+
+      if (dz === 0) return { x: point3D.x, y: point3D.y };
+
+      const t = -cameraPosition.z / dz;
+      const x2D = cameraPosition.x + dx * t;
+      const y2D = cameraPosition.y + dy * t;
+
+      const screenX = canvas.width / 2 + x2D;
+      const screenY = canvas.height / 2 - y2D;
+
+      return { x: screenX, y: screenY };
+    }
+
+    // === Generate Globe Wireframe Points ===
+    const globeLines = [];
+    const radius = 100;
+
+    for (let lat = -80; lat <= 80; lat += 20) {
+      const circle = [];
+      for (let lon = 0; lon <= 360; lon += 10) {
+        const phi = (lon * Math.PI) / 180;
+        const theta = (lat * Math.PI) / 180;
+
+        const x = radius * Math.cos(theta) * Math.cos(phi);
+        const y = radius * Math.sin(theta);
+        const z = radius * Math.cos(theta) * Math.sin(phi);
+        circle.push({ x, y, z });
+      }
+      globeLines.push(circle);
+    }
+
+    for (let lon = 0; lon <= 360; lon += 20) {
+      const line = [];
+      for (let lat = -90; lat <= 90; lat += 10) {
+        const phi = (lon * Math.PI) / 180;
+        const theta = (lat * Math.PI) / 180;
+
+        const x = radius * Math.cos(theta) * Math.cos(phi);
+        const y = radius * Math.sin(theta);
+        const z = radius * Math.cos(theta) * Math.sin(phi);
+        line.push({ x, y, z });
+      }
+      globeLines.push(line);
+    }
+
+    // === Generate Stars ===
+    const stars = Array.from({ length: numStars }, () => ({
+      x: (Math.random() - 0.5) * 2000,
+      y: (Math.random() - 0.5) * 2000,
+      z: (Math.random() - 0.5) * 2000,
+    }));
+
+    let angle = 0;
+
+    function rotateY(point, theta) {
+      const cos = Math.cos(theta);
+      const sin = Math.sin(theta);
+      return {
+        x: point.x * cos - point.z * sin,
+        y: point.y,
+        z: point.x * sin + point.z * cos
+      };
+    }
+
+    function draw() {
+      ctx.fillStyle = skyColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw stars
+      ctx.fillStyle = 'white';
+      stars.forEach(p => {
+        const rotated = rotateY(p, angle);
+        const screen = project3DTo2D(rotated);
+        ctx.beginPath();
+        ctx.arc(screen.x, screen.y, 1, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+
+      // Draw globe wireframe
+      ctx.strokeStyle = lineColor;
+      ctx.lineWidth = 0.5;
+      globeLines.forEach(line => {
+        ctx.beginPath();
+        line.forEach((p, i) => {
+          const rotated = rotateY({
+            x: p.x + globePosition.x,
+            y: p.y + globePosition.y,
+            z: p.z + globePosition.z
+          }, angle);
+          const screen = project3DTo2D(rotated);
+          if (i === 0) {
+            ctx.moveTo(screen.x, screen.y);
+          } else {
+            ctx.lineTo(screen.x, screen.y);
+          }
+        });
+        ctx.stroke();
+      });
+
+      angle += 0.01 * angleSpeed;
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+</body>
+</html>
