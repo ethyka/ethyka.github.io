@@ -78,6 +78,39 @@
       margin-bottom: 20px;
     }
 
+    /* App Store Buttons */
+    .store-buttons {
+      display: flex;
+      gap: 15px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+
+    .store-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.2s, transform 0.2s, border-color 0.2s;
+    }
+
+    .store-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .store-icon {
+      font-size: 1.2rem;
+      margin-right: 10px;
+    }
+
     .footer-nav {
       margin-top: 40px;
       padding-top: 20px;
@@ -106,14 +139,23 @@
   <div class="container">
     <h1>AI Ethyka LLC</h1>
     <h2>Pioneering the future of ethical artificial intelligence.</h2>
-    
+
     <p>
       At AI Ethyka, we are dedicated to building robust, secure, and highly functional mobile applications and software solutions. Our mission is to integrate advanced artificial intelligence with strict ethical standards, ensuring privacy, reliability, and unparalleled user experiences.
     </p>
-    
+
     <p>
       As a registered developer entity, our team focuses on pushing the boundaries of what is possible on modern mobile platforms while maintaining the highest level of data integrity.
     </p>
+
+    <div class="store-buttons">
+      <a href="https://www.apple.com/app-store/" target="_blank" rel="noopener noreferrer" class="store-btn">
+        <span class="store-icon"></span> App Store
+      </a>
+      <a href="https://play.google.com/store/" target="_blank" rel="noopener noreferrer" class="store-btn">
+        <span class="store-icon">▶</span> Google Play
+      </a>
+    </div>
 
     <p>
       <strong>Contact Information:</strong><br>
@@ -128,7 +170,7 @@
 
   <script>
     // ==== Global Config Variables ====
-    const skyColor = 'transparent'; // Let the background show through
+    const skyColor = 'transparent';
     const lineColor = 'lime';
     const globePosition = { x: 0, y: 0, z: 0 };
     const cameraPosition = { x: 0, y: 0, z: 500 };
@@ -165,7 +207,7 @@
 
     // === Generate Globe Wireframe Points ===
     const globeLines = [];
-    const radius = 180; // slightly larger for background effect
+    const radius = 180;
 
     for (let lat = -80; lat <= 80; lat += 20) {
       const circle = [];
@@ -215,7 +257,7 @@
     }
 
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // clear for transparent bg
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw stars
       ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
@@ -228,7 +270,7 @@
       });
 
       // Draw globe wireframe
-      ctx.strokeStyle = 'rgba(0, 255, 0, 0.3)'; // slightly dimmer for background
+      ctx.strokeStyle = 'rgba(0, 255, 0, 0.3)';
       ctx.lineWidth = 1;
       globeLines.forEach(line => {
         ctx.beginPath();
