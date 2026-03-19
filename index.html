@@ -1,36 +1,38 @@
 <!DOCTYPE html>
-<!-- 
-  © 2025 AI Ethyka LLC. All rights reserved.
-  Unauthorized copying or distribution of this file, via any medium, is strictly prohibited.
-  For licensing or usage inquiries, contact info@aiethyka.com.
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <title>AI Ethyka</title>
+  <title>AI Ethyka LLC | Ethical Artificial Intelligence</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
-      height: 100%;
+      min-height: 100vh;
       background: black;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: white;
     }
 
     canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
       display: block;
     }
 
+    /* Top right system text */
     #overlayText {
       position: absolute;
-      top: 10px;
-      right: 20px;
-      color: white;
+      top: 20px;
+      right: 30px;
+      color: lime;
       font-family: monospace;
-      font-size: 16px;
+      font-size: 14px;
       white-space: nowrap;
+      z-index: 10;
     }
 
     .blinking-cursor::after {
@@ -41,15 +43,92 @@
     @keyframes blink {
       50% { opacity: 0; }
     }
+
+    /* Main Content Container */
+    .container {
+      max-width: 800px;
+      margin: 80px auto;
+      padding: 40px;
+      background: rgba(15, 15, 15, 0.85);
+      border: 1px solid #333;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      backdrop-filter: blur(5px);
+      z-index: 1;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-top: 0;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      color: #aaa;
+      font-weight: 400;
+      margin-bottom: 30px;
+    }
+
+    p {
+      line-height: 1.6;
+      color: #ddd;
+      margin-bottom: 20px;
+    }
+
+    .footer-nav {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #333;
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-nav a {
+      color: #4da6ff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .footer-nav a:hover {
+      color: #80c1ff;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <canvas id="canvas"></canvas>
-  <div id="overlayText" class="blinking-cursor">Loading universe, please wait...</div>
+  <div id="overlayText" class="blinking-cursor">SYS.ONLINE</div>
+
+  <div class="container">
+    <h1>AI Ethyka LLC</h1>
+    <h2>Pioneering the future of ethical artificial intelligence.</h2>
+    
+    <p>
+      At AI Ethyka, we are dedicated to building robust, secure, and highly functional mobile applications and software solutions. Our mission is to integrate advanced artificial intelligence with strict ethical standards, ensuring privacy, reliability, and unparalleled user experiences.
+    </p>
+    
+    <p>
+      As a registered developer entity, our team focuses on pushing the boundaries of what is possible on modern mobile platforms while maintaining the highest level of data integrity.
+    </p>
+
+    <p>
+      <strong>Contact Information:</strong><br>
+      For business inquiries or developer relations, please reach out to us at <a href="mailto:info@aiethyka.com" style="color: #4da6ff;">info@aiethyka.com</a>.
+    </p>
+
+    <div class="footer-nav">
+      <a href="/support/index.html">Support & Legal</a>
+      <a href="mailto:info@aiethyka.com">Contact Us</a>
+    </div>
+  </div>
 
   <script>
     // ==== Global Config Variables ====
-    const skyColor = 'black';
+    const skyColor = 'transparent'; // Let the background show through
     const lineColor = 'lime';
     const globePosition = { x: 0, y: 0, z: 0 };
     const cameraPosition = { x: 0, y: 0, z: 500 };
@@ -86,7 +165,7 @@
 
     // === Generate Globe Wireframe Points ===
     const globeLines = [];
-    const radius = 100;
+    const radius = 180; // slightly larger for background effect
 
     for (let lat = -80; lat <= 80; lat += 20) {
       const circle = [];
@@ -136,11 +215,10 @@
     }
 
     function draw() {
-      ctx.fillStyle = skyColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // clear for transparent bg
 
       // Draw stars
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
       stars.forEach(p => {
         const rotated = rotateY(p, angle);
         const screen = project3DTo2D(rotated);
@@ -150,8 +228,8 @@
       });
 
       // Draw globe wireframe
-      ctx.strokeStyle = lineColor;
-      ctx.lineWidth = 0.5;
+      ctx.strokeStyle = 'rgba(0, 255, 0, 0.3)'; // slightly dimmer for background
+      ctx.lineWidth = 1;
       globeLines.forEach(line => {
         ctx.beginPath();
         line.forEach((p, i) => {
